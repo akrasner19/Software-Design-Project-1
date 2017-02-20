@@ -1,8 +1,8 @@
 #include "tokenize.hpp"
 
-vector<string> tokenize(istream& in)
+list<string> tokenize(istream& in)
 {
-	vector<string> parseFeed;
+	list<string> parseFeed;
 	char temp;
 	string junk;
 	string tokenStor = "";

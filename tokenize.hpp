@@ -2,14 +2,14 @@
 #define TOKENIZER_H
 
 #include <iostream>
-#include <vector>
+#include <list>
 #include <string>
 #include <cctype>
 
 using std::string;
-using std::vector;
+using std::list;
 using std::istream;
 
-vector<string> tokenize(istream& in);
+list<string> tokenize(istream& in);
 
 #endif

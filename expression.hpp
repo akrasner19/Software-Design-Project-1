@@ -2,11 +2,19 @@
 #define EXPRESSION_H
 
 #include <string>
-#include <vector>
+#include <list>
 
 using std::string;
-using std::vector;
+using std::list;
 
+enum AtomType {NoneType, BoolType, DoubleType, StringType, OpType};
+
+struct Atom{
+	AtomType type;
+	bool bool_value;
+	double double_value;
+	string string_value;
+};
 
 class Expression
 {
@@ -28,22 +36,14 @@ public:
 
 	// Equality operator for two Expressions, two expressions are equal if the have the same 
 	// type, atom value, and number of arguments
-	bool operator==(const Expression & exp) const noexcept;
-
-private:
-	vector<Expression> children;
+	bool operator==(const Expression & exp) const;
 
 	Atom atom;
+	
+	list<Expression> children;
+private:
 
-}
+};
 
-enum AtomType {NoneType, BoolType, DoubleType, StringType, OpType};
-
-struct Atom{
-	AtomType type;
-	bool bool_value;
-	double double_value;
-	string string_value;
-}
 
 #endif

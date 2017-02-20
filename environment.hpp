@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+#include <list>
 
 using std::cin;
 using std::cout;

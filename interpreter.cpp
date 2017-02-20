@@ -6,13 +6,24 @@ Interpreter::Interpreter()
 	ASTHead.atom.type = NoneType;
 }
 
+bool isNumber(const string& s)
+{
+    try
+    {
+        std::stod(s);
+    }
+    catch(...)
+    {
+        return false;
+    }
+    return true;
+}
 
 // Given a vtscript program as a std::istream, attempt to parse into an internal AST
 // return true on success, false on failure
-bool Interpreter::parse(std::istream & expression) noexcept
+bool Interpreter::parse(std::istream & expression)
 {
-	State state = NoBuild;
-	vector<string> tokens = tokenize(expression);
+	list<string> tokens = tokenize(expression);
 	parseHelper(tokens, ASTHead);//change to deal with parse failures
 	return true;
 }
@@ -22,7 +33,10 @@ bool Interpreter::parse(std::istream & expression) noexcept
 // the exception message string should document the nature of the semantic error 
 Expression Interpreter::eval()
 {
-	throw InterpreterSemanticError("Error: could not evaluate expression");
+	string whatToThrow = "Error: could not evaluate expression";
+	std::cerr << whatToThrow;
+	//throw InterpreterSemanticError(whatToThrow);
+	return ASTHead;
 }
 
 AtomType whatType(string token)
@@ -43,28 +57,15 @@ AtomType whatType(string token)
 	return theType;
 }
 
-bool isNumber(const string& s)
-{
-    try
-    {
-        std::stod(s);
-    }
-    catch(...)
-    {
-        return false;
-    }
-    return true;
-}
-
 //Expression is the head of the relative thing
-Expression Interpreter::parseHelper(vector<string>& tokens, Expression& head)
+Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 {
 	if (tokens.front() == "(")
 	{
 		tokens.pop_front();
-		if (head.atom.AtomType != OpType)
+		if (head.atom.type != OpType)
 		{
-			head.atom.AtomType = OpType;
+			head.atom.type = OpType;
 			head.atom.string_value = tokens.front();
 			tokens.pop_front();
 			return parseHelper(tokens, head);
@@ -72,7 +73,7 @@ Expression Interpreter::parseHelper(vector<string>& tokens, Expression& head)
 		else
 		{
 			Expression element(tokens.front());
-			element.atom.AtomType = OpType;
+			element.atom.type = OpType;
 			tokens.pop_front();
 			return parseHelper(tokens, element);
 		}
@@ -121,12 +122,12 @@ Expression Interpreter::parseHelper(vector<string>& tokens, Expression& head)
 // 	return ASTHead;
 // }
 /*
-//requires that the vector being passed in starts with (
-vector<string> nextSubListGen(vector<string> tokens)
+//requires that the list being passed in starts with (
+list<string> nextSubListGen(list<string> tokens)
 {
 	int i = 1;
 	index = 1;
-	vector<string> subList;
+	list<string> subList;
 	while (i > 0 && index < tokens.size())
 	{
 		subList.push_back(tokens[index])

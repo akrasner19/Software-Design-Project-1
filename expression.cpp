@@ -28,21 +28,21 @@ Expression::Expression(double value)
 // Construct an Expression with a single Symbol atom with value
 Expression::Expression(const string & value)
 {
-	atom.type = StyleType;
+	atom.type = StringType;
 	atom.string_value = value;
 }
 
 // Equality operator for two Expressions, two expressions are equal if the have the same 
 // type, atom value, and number of arguments
-bool Expression::operator==(const Expression & exp) const noexcept
+bool Expression::operator==(const Expression & exp) const
 {
-	if (exp.atom.type == this.atom.type)
+	if (exp.atom.type == this->atom.type)
 	{
 		if (exp.atom.type == BoolType)
 		{
-			if (exp.atom.bool_value == this.atom.bool_value)
+			if (exp.atom.bool_value == this->atom.bool_value)
 			{
-				if (exp.children.size() == this.children.size)
+				if (exp.children.size() == this->children.size())
 				{
 					return true;
 				}
@@ -50,9 +50,9 @@ bool Expression::operator==(const Expression & exp) const noexcept
 		}
 		else if (exp.atom.type == DoubleType)
 		{
-			if (exp.atom.double_value == this.atom.double_value)
+			if (exp.atom.double_value == this->atom.double_value)
 			{
-				if (exp.children.size() == this.children.size)
+				if (exp.children.size() == this->children.size())
 				{
 					return true;
 				}
@@ -60,9 +60,9 @@ bool Expression::operator==(const Expression & exp) const noexcept
 		}
 		else if (exp.atom.type == StringType || exp.atom.type == OpType)
 		{
-			if (exp.atom.string_value == this.atom.string_value)
+			if (exp.atom.string_value == this->atom.string_value)
 			{
-				if (exp.children.size() == this.children.size)
+				if (exp.children.size() == this->children.size())
 				{
 					return true;
 				}
@@ -70,7 +70,7 @@ bool Expression::operator==(const Expression & exp) const noexcept
 		}
 		else if (exp.atom.type == NoneType)
 		{
-			if (exp.children.size() == this.children.size)
+			if (exp.children.size() == this->children.size())
 			{
 				return true;
 			}
