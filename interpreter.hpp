@@ -3,13 +3,16 @@
 
 #include "expression.hpp"
 #include "tokenize.hpp"
+#include "environment.hpp"
 #include "interpreter_semantic_error.hpp"
 #include <iostream>
 #include <list>
+#include <map>
 
 using std::istream;
 using std::list;
 using std::string;
+using std::map;
 
 class Interpreter
 {
@@ -26,9 +29,13 @@ public:
 	// the exception message string should document the nature of the semantic error 
 	Expression eval();
 
+	Expression evalRecursive(Expression& head, map<string,fcp>& funcMap);
+
 	Expression parseHelper(list<string>& tokens, Expression& head);
 
-	// Expression getHead();
+	void dupExpVals(Expression& temp);
+
+	void dump();
 
 private:
 	Expression ASTHead;
@@ -38,6 +45,6 @@ bool isNumber(const string& s);
 
 AtomType whatType(string token);
 
-
+void rtp(Expression& exp);
 
 #endif

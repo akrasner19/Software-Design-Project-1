@@ -1,4 +1,9 @@
 #include "interpreter.hpp"
+#include "environment.hpp"
+
+#include <iostream>
+
+using std::cout;
 
 // Default construct an Interpreter with the default environment and an empty AST
 Interpreter::Interpreter()
@@ -23,8 +28,15 @@ bool isNumber(const string& s)
 // return true on success, false on failure
 bool Interpreter::parse(std::istream & expression)
 {
-	list<string> tokens = tokenize(expression);
-	parseHelper(tokens, ASTHead);//change to deal with parse failures
+	try
+	{
+		list<string> tokens = tokenize(expression);
+		parseHelper(tokens, ASTHead);//change to deal with parse failures
+	}
+	catch (InterpreterSemanticError& error)
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -33,10 +45,34 @@ bool Interpreter::parse(std::istream & expression)
 // the exception message string should document the nature of the semantic error 
 Expression Interpreter::eval()
 {
-	string whatToThrow = "Error: could not evaluate expression";
-	std::cerr << whatToThrow;
-	//throw InterpreterSemanticError(whatToThrow);
-	return ASTHead;
+	map<string,fcp> functions;
+	fillMap(functions);
+	return evalRecursive(ASTHead, functions);
+}
+
+Expression Interpreter::evalRecursive(Expression& head, map<string,fcp>& funcMap)
+{
+	if (head.children.size() == 0)
+	{
+		return head;
+	}
+	else
+	{
+		for (list<Expression>::iterator it = head.children.begin(); it != head.children.end(); ++it)
+		{
+			evalRecursive(*it, funcMap);
+		}
+		if (funcMap.count(head.atom.string_value) > 0)
+		{
+			fcp fp = funcMap[head.atom.string_value];
+			fp(head);
+		}
+		else
+		{
+			throw InterpreterSemanticError("Error: issue in evaluation");
+		}
+		return head;
+	}
 }
 
 AtomType whatType(string token)
@@ -60,64 +96,128 @@ AtomType whatType(string token)
 //Expression is the head of the relative thing
 Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 {
-	if (tokens.front() == "(")
+	if (!tokens.empty())
 	{
-		tokens.pop_front();
-		if (head.atom.type != OpType)
+		if (tokens.front() == "(")
 		{
-			head.atom.type = OpType;
-			head.atom.string_value = tokens.front();
 			tokens.pop_front();
-			return parseHelper(tokens, head);
-		} //make it so it splits the set up every time it hits a parenthesis into a subset that is processed by the method until it is called
+			if (head.atom.type != OpType)
+			{
+				head.atom.type = OpType;
+				head.atom.string_value = tokens.front();
+				tokens.pop_front();
+				return parseHelper(tokens, head);
+			} //make it so it splits the set up every time it hits a parenthesis into a subset that is processed by the method until it is called
+			else
+			{
+				Expression element(tokens.front());
+				element.atom.type = OpType;
+				tokens.pop_front();
+				parseHelper(tokens, element);
+				head.children.push_back(element);
+				return head;
+			}
+		}
 		else
 		{
-			Expression element(tokens.front());
-			element.atom.type = OpType;
-			tokens.pop_front();
-			return parseHelper(tokens, element);
+			if (tokens.front() == ")")
+			{
+				tokens.pop_front();
+				return head;
+			}
+			else if (whatType(tokens.front()) == BoolType)
+			{
+				if (tokens.front() == "True")
+				{
+					Expression element(true);
+					tokens.pop_front();
+					head.children.push_back(element);
+				}
+				else if (tokens.front() == "False")
+				{
+					Expression element(false);
+					tokens.pop_front();
+					head.children.push_back(element);
+				}
+				return parseHelper(tokens, head);
+			}
+			else if (whatType(tokens.front()) == DoubleType)
+			{
+				Expression element(std::stod(tokens.front()));
+				tokens.pop_front();
+				head.children.push_back(element);
+				return parseHelper(tokens, head);
+			}
+			else if (whatType(tokens.front()) == StringType)
+			{
+				Expression element(tokens.front());
+				tokens.pop_front();
+				head.children.push_back(element);
+				return parseHelper(tokens, head);
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in parsing");
+			}
 		}
 	}
 	else
 	{
-		if (tokens.front() == ")")
-		{
-			tokens.pop_front();
-			return head;
-		}
-		else if (whatType(tokens.front()) == BoolType)
-		{
-			if (tokens.front() == "True")
-			{
-				Expression element(true);
-				tokens.pop_front();
-				head.children.push_back(element);
-			}
-			else if (tokens.front() == "False")
-			{
-				Expression element(false);
-				tokens.pop_front();
-				head.children.push_back(element);
-			}
-			return parseHelper(tokens, head);
-		}
-		else if (whatType(tokens.front()) == DoubleType)
-		{
-			Expression element(std::stod(tokens.front()));
-			tokens.pop_front();
-			head.children.push_back(element);
-			return parseHelper(tokens, head);
-		}
-		else if (whatType(tokens.front()) == StringType)
-		{
-			Expression element(tokens.front());
-			tokens.pop_front();
-			head.children.push_back(element);
-			return parseHelper(tokens, head);
-		}
+		throw InterpreterSemanticError("Error: issue in parsing");
+	}
+		
+}
+
+void Interpreter::dupExpVals(Expression& temp)
+{
+	temp.atom.type = ASTHead.atom.type;
+	if (ASTHead.atom.type == DoubleType)
+	{
+		temp.atom.double_value = ASTHead.atom.double_value;
+	}
+	else if (ASTHead.atom.type == BoolType)
+	{
+		temp.atom.bool_value = ASTHead.atom.bool_value;
+	}
+	else
+	{
+		temp.atom.string_value = ASTHead.atom.string_value;
 	}
 }
 
+void Interpreter::dump()
+{
+	rtp(ASTHead);
+}
+
+void rtp(Expression& exp)
+{
+	if (exp.atom.type == DoubleType)
+	{
+		cout << exp.atom.double_value << " ";
+	}
+	else if (exp.atom.type == BoolType)
+	{
+		cout << exp.atom.bool_value << " ";
+	}
+	else
+	{
+		cout << exp.atom.string_value << " ";
+	}
+	if (exp.children.size() == 0)
+	{
+		//do nothing
+	}
+	else
+	{
+		cout << "\n";
+		for (list<Expression>::iterator it = exp.children.begin(); it != exp.children.end(); ++it)
+		{
+			rtp(*it); //fix this and get this printing
+		}
+		cout << "\n" << endl;
+	}
+}
 // Expression getHead(){
 // 	return ASTHead;
 // }
