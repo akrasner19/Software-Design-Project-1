@@ -1,6 +1,6 @@
 #include "environment.hpp"
 //put operation functions here
-void addExp(Expression& exp)
+void addExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() < 2)
 	{
@@ -27,7 +27,7 @@ void addExp(Expression& exp)
 	}
 }
 
-void subExp(Expression& exp)
+void subExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() < 1 || exp.children.size() > 2)
 	{
@@ -73,7 +73,7 @@ void subExp(Expression& exp)
 	}
 }
 
-void multExp(Expression& exp)
+void multExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() < 2)
 	{
@@ -110,7 +110,7 @@ void multExp(Expression& exp)
 	}
 }
 
-void divExp(Expression& exp)
+void divExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -142,7 +142,7 @@ void divExp(Expression& exp)
 	}
 }
 
-void eqExp(Expression& exp)
+void eqExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -175,7 +175,7 @@ void eqExp(Expression& exp)
 	}
 }
 
-void geqExp(Expression& exp)
+void geqExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -208,7 +208,7 @@ void geqExp(Expression& exp)
 	}
 }
 
-void leqExp(Expression& exp)
+void leqExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -241,7 +241,7 @@ void leqExp(Expression& exp)
 	}
 }
 
-void ltExp(Expression& exp)
+void ltExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -274,7 +274,7 @@ void ltExp(Expression& exp)
 	}
 }
 
-void gtExp(Expression& exp)
+void gtExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 2)
 	{
@@ -307,7 +307,7 @@ void gtExp(Expression& exp)
 	}
 }
 
-void andExp(Expression& exp)
+void andExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() < 2)
 	{
@@ -334,7 +334,7 @@ void andExp(Expression& exp)
 	}
 }
 
-void orExp(Expression& exp)
+void orExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() < 2)
 	{
@@ -361,7 +361,7 @@ void orExp(Expression& exp)
 	}
 }
 
-void notExp(Expression& exp)
+void notExp(Expression& exp, map<string,Expression>& envars)
 {
 	if (exp.children.size() != 1)
 	{
@@ -385,6 +385,126 @@ void notExp(Expression& exp)
 	}
 }
 
+//special cases----------------------------------------------------------------
+void defineExp(Expression& exp, map<string,Expression>& envars)
+{
+	if (exp.children.size() != 2)
+	{
+		throw InterpreterSemanticError("Error: issue in evaluation");
+	}
+	else
+	{
+		string keyToExp;
+		if (exp.children.front().atom.type != StringType)
+		{
+			throw InterpreterSemanticError("Error: issue in evaluation");
+		}
+		keyToExp = exp.children.front().atom.string_value;
+		exp.children.pop_front();
+		if (exp.children.front().atom.type == BoolType)
+		{
+			Expression mappedVal(exp.children.front().atom.bool_value);
+			exp.atom.type = BoolType;
+			exp.atom.bool_value = exp.children.front().atom.bool_value;
+			envars[keyToExp] = mappedVal;
+		}
+		else if (exp.children.front().atom.type == DoubleType)
+		{
+			Expression mappedVal(exp.children.front().atom.double_value);
+			exp.atom.type = DoubleType;
+			exp.atom.double_value = exp.children.front().atom.double_value;
+			envars[keyToExp] = mappedVal;
+		}
+		else
+		{
+			Expression mappedVal(exp.children.front().atom.string_value);
+			exp.atom.type = StringType;
+			exp.atom.string_value = exp.children.front().atom.string_value;
+			envars[keyToExp] = mappedVal;
+		}
+		exp.children.pop_front();
+	}
+}
+
+void beginExp(Expression& exp, map<string,Expression>& envars)
+{
+	if (exp.children.empty())
+	{
+		throw InterpreterSemanticError("Error: issue in evaluation");
+	}
+	while (exp.children.size() > 1)
+	{
+		exp.children.pop_front();
+	}
+	if (exp.children.front().atom.type == BoolType)
+	{
+		exp.atom.type = BoolType;
+		exp.atom.bool_value = exp.children.front().atom.bool_value;
+	}
+	else if (exp.children.front().atom.type == DoubleType)
+	{
+		exp.atom.type = DoubleType;
+		exp.atom.double_value = exp.children.front().atom.double_value;
+	}
+	else
+	{
+		exp.atom.type = StringType;
+		exp.atom.string_value = exp.children.front().atom.string_value;
+	}
+	exp.children.pop_front();
+}
+
+void ifExp(Expression& exp, map<string,Expression>& envars)
+{
+	//temporary version that kinda works but technically evaluates everything
+	if (exp.children.size() != 3 || exp.children.front().atom.type != BoolType)
+	{
+		throw InterpreterSemanticError("Error: issue in evaluation");
+	}
+	if (exp.children.front().atom.bool_value)
+	{
+		exp.children.pop_front();
+		if (exp.children.front().atom.type == BoolType)
+		{
+			exp.atom.type = BoolType;
+			exp.atom.bool_value = exp.children.front().atom.bool_value;
+		}
+		else if (exp.children.front().atom.type == DoubleType)
+		{
+			exp.atom.type = DoubleType;
+			exp.atom.double_value = exp.children.front().atom.double_value;
+		}
+		else
+		{
+			exp.atom.type = StringType;
+			exp.atom.string_value = exp.children.front().atom.string_value;
+		}
+		exp.children.pop_front();
+		exp.children.pop_front();
+	}
+	else
+	{
+		exp.children.pop_front();
+		exp.children.pop_front();
+		if (exp.children.front().atom.type == BoolType)
+		{
+			exp.atom.type = BoolType;
+			exp.atom.bool_value = exp.children.front().atom.bool_value;
+		}
+		else if (exp.children.front().atom.type == DoubleType)
+		{
+			exp.atom.type = DoubleType;
+			exp.atom.double_value = exp.children.front().atom.double_value;
+		}
+		else
+		{
+			exp.atom.type = StringType;
+			exp.atom.string_value = exp.children.front().atom.string_value;
+		}
+		exp.children.pop_front();
+	}
+}
+
 void fillMap(map<string,fcp>& funcMap)
 {
 	funcMap["+"] = &addExp;
@@ -399,5 +519,8 @@ void fillMap(map<string,fcp>& funcMap)
 	funcMap["and"] = &andExp;
 	funcMap["or"] = &orExp;
 	funcMap["not"] = &notExp;
+	funcMap["define"] = &defineExp;
+	funcMap["begin"] = &beginExp;
+	funcMap["if"] = &ifExp;
 }
 

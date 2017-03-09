@@ -41,6 +41,9 @@ public:
 	Atom atom;
 	
 	list<Expression> children;
+
+	//used only in parsing
+	Expression * prevHead;
 private:
 
 };

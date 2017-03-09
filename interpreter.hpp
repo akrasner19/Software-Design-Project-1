@@ -29,7 +29,7 @@ public:
 	// the exception message string should document the nature of the semantic error 
 	Expression eval();
 
-	Expression evalRecursive(Expression& head, map<string,fcp>& funcMap);
+	Expression evalRecursive(Expression& head, map<string,Expression>& envars, map<string,fcp>& funcMap);
 
 	Expression parseHelper(list<string>& tokens, Expression& head);
 

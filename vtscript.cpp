@@ -60,7 +60,7 @@ int main(int argc, char*argv[])
 				}
 				catch (InterpreterSemanticError& error)
 				{
-					cerr << error.what();
+					cerr << error.what() << endl;
 				}
 			}
 			else
@@ -133,6 +133,3 @@ int main(int argc, char*argv[])
 	}
 	return 0;
 }
-
-using std::cin;
-using std::cout;

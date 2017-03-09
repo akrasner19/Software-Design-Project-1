@@ -15,20 +15,24 @@ using std::map;
 using std::cerr;
 using std::endl;
 
-typedef void (*fcp) (Expression&);
+typedef void (*fcp) (Expression&, map<string,Expression>&);
 
-void addExp(Expression& exp);
-void subExp(Expression& exp);
-void multExp(Expression& exp);
-void divExp(Expression& exp);
-void eqExp(Expression& exp);
-void geqExp(Expression& exp);
-void leqExp(Expression& exp);
-void ltExp(Expression& exp);
-void gtExp(Expression& exp);
-void andExp(Expression& exp);
-void orExp(Expression& exp);
-void notExp(Expression& exp);
+void defineExp(Expression& exp, map<string,Expression>& envars);
+void beginExp(Expression& exp, map<string,Expression>& envars);
+void ifExp(Expression& exp, map<string,Expression>& envars);
+
+void addExp(Expression& exp, map<string,Expression>& envars);
+void subExp(Expression& exp, map<string,Expression>& envars);
+void multExp(Expression& exp, map<string,Expression>& envars);
+void divExp(Expression& exp, map<string,Expression>& envars);
+void eqExp(Expression& exp, map<string,Expression>& envars);
+void geqExp(Expression& exp, map<string,Expression>& envars);
+void leqExp(Expression& exp, map<string,Expression>& envars);
+void ltExp(Expression& exp, map<string,Expression>& envars);
+void gtExp(Expression& exp, map<string,Expression>& envars);
+void andExp(Expression& exp, map<string,Expression>& envars);
+void orExp(Expression& exp, map<string,Expression>& envars);
+void notExp(Expression& exp, map<string,Expression>& envars);
 
 void fillMap(map<string,fcp>& funcMap);
 

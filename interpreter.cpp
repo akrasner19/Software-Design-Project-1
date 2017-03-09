@@ -2,6 +2,7 @@
 #include "environment.hpp"
 
 #include <iostream>
+#include <cmath>
 
 using std::cout;
 
@@ -47,10 +48,14 @@ Expression Interpreter::eval()
 {
 	map<string,fcp> functions;
 	fillMap(functions);
-	return evalRecursive(ASTHead, functions);
+	map<string,Expression> envars;
+	double dVal = atan2(0, -1);
+	Expression piVal(dVal);
+	envars["pi"] = piVal;
+	return evalRecursive(ASTHead, envars, functions);
 }
 
-Expression Interpreter::evalRecursive(Expression& head, map<string,fcp>& funcMap)
+Expression Interpreter::evalRecursive(Expression& head, map<string,Expression>& envars, map<string,fcp>& funcMap)
 {
 	if (head.children.size() == 0)
 	{
@@ -60,12 +65,12 @@ Expression Interpreter::evalRecursive(Expression& head, map<string,fcp>& funcMap
 	{
 		for (list<Expression>::iterator it = head.children.begin(); it != head.children.end(); ++it)
 		{
-			evalRecursive(*it, funcMap);
+			evalRecursive(*it, envars, funcMap);
 		}
 		if (funcMap.count(head.atom.string_value) > 0)
 		{
 			fcp fp = funcMap[head.atom.string_value];
-			fp(head);
+			fp(head, envars);
 		}
 		else
 		{
@@ -101,6 +106,10 @@ Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 		if (tokens.front() == "(")
 		{
 			tokens.pop_front();
+			if (tokens.empty())
+			{
+				throw InterpreterSemanticError("Error: issue in parsing");
+			}
 			if (head.atom.type != OpType)
 			{
 				head.atom.type = OpType;
@@ -112,6 +121,7 @@ Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 			{
 				Expression element(tokens.front());
 				element.atom.type = OpType;
+				element.prevHead = &head;
 				tokens.pop_front();
 				parseHelper(tokens, element);
 				head.children.push_back(element);
@@ -123,7 +133,22 @@ Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 			if (tokens.front() == ")")
 			{
 				tokens.pop_front();
-				return head;
+				if (tokens.empty())
+				{
+					if (head.prevHead)
+					{
+						throw InterpreterSemanticError("Error: issue in parsing");
+					}
+					else
+					{
+						return head;
+					}
+				}
+				else
+				{
+					//call the method again with the parent as the node :/
+					return parseHelper(tokens, *(head.prevHead));
+				}
 			}
 			else if (whatType(tokens.front()) == BoolType)
 			{
@@ -204,7 +229,7 @@ void rtp(Expression& exp)
 	{
 		cout << exp.atom.string_value << " ";
 	}
-	if (exp.children.size() == 0)
+	if (exp.children.empty())
 	{
 		//do nothing
 	}

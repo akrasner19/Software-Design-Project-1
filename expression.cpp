@@ -3,12 +3,14 @@
 Expression::Expression()
 {
 	atom.type = NoneType;
+	prevHead = nullptr;
 }
 
 //Default destructor
 Expression::~Expression()
 {
 	//nothing but maybe later
+	prevHead = nullptr;
 }
 
 // Construct an Expression with a single Boolean atom with value
@@ -16,6 +18,7 @@ Expression::Expression(bool value)
 {
 	atom.type = BoolType;
 	atom.bool_value = value;
+	prevHead = nullptr;
 }
 
 // Construct an Expression with a single Number atom with value
@@ -23,6 +26,7 @@ Expression::Expression(double value)
 {
 	atom.type = DoubleType;
 	atom.double_value = value;
+	prevHead = nullptr;
 }
 
 // Construct an Expression with a single Symbol atom with value
@@ -30,6 +34,7 @@ Expression::Expression(const string & value)
 {
 	atom.type = StringType;
 	atom.string_value = value;
+	prevHead = nullptr;
 }
 
 // Equality operator for two Expressions, two expressions are equal if the have the same 
