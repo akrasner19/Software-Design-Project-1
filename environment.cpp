@@ -1,4 +1,6 @@
 #include "environment.hpp"
+
+#include <set>
 //put operation functions here
 void addExp(Expression& exp, map<string,Expression>& envars)
 {
@@ -823,6 +825,8 @@ void notExp(Expression& exp, map<string,Expression>& envars)
 //special cases----------------------------------------------------------------
 void defineExp(Expression& exp, map<string,Expression>& envars)
 {
+	std::set<string> keywords {"+", "-", "*", "/", "=", ">=", "<=", ">", "<",
+								"and", "or", "not", "define", "begin", "if"};
 	if (exp.children.size() != 2)
 	{
 		throw InterpreterSemanticError("Error: issue in evaluation");
@@ -831,6 +835,14 @@ void defineExp(Expression& exp, map<string,Expression>& envars)
 	{
 		string keyToExp;
 		if (exp.children.front().atom.type != StringType)
+		{
+			throw InterpreterSemanticError("Error: issue in evaluation");
+		}
+		if (envars.count(exp.children.front().atom.string_value) > 0)
+		{
+			throw InterpreterSemanticError("Error: cannot redefine variable");
+		}
+		if (keywords.count(exp.children.front().atom.string_value) > 0)
 		{
 			throw InterpreterSemanticError("Error: issue in evaluation");
 		}
@@ -852,10 +864,37 @@ void defineExp(Expression& exp, map<string,Expression>& envars)
 		}
 		else
 		{
-			Expression mappedVal(exp.children.front().atom.string_value);
-			exp.atom.type = StringType;
-			exp.atom.string_value = exp.children.front().atom.string_value;
-			envars[keyToExp] = mappedVal;
+			if (envars.count(exp.children.front().atom.string_value) > 0)
+			{
+				if (envars[exp.children.front().atom.string_value].atom.type == BoolType)//line that changes
+				{
+					Expression mappedVal(envars[exp.children.front().atom.string_value].atom.bool_value);
+					exp.atom.type = BoolType;
+					exp.atom.bool_value = envars[exp.children.front().atom.string_value].atom.bool_value;
+					envars[keyToExp] = mappedVal;
+				}
+				else if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)
+				{
+					Expression mappedVal(envars[exp.children.front().atom.string_value].atom.double_value);
+					exp.atom.type = DoubleType;
+					exp.atom.double_value = envars[exp.children.front().atom.string_value].atom.double_value;
+					envars[keyToExp] = mappedVal;
+				}
+				else
+				{
+					Expression mappedVal(envars[exp.children.front().atom.string_value].atom.string_value);
+					exp.atom.type = StringType;
+					exp.atom.string_value = envars[exp.children.front().atom.string_value].atom.string_value;
+					envars[keyToExp] = mappedVal;
+				}
+			}
+			else
+			{
+				Expression mappedVal(exp.children.front().atom.string_value);
+				exp.atom.type = StringType;
+				exp.atom.string_value = exp.children.front().atom.string_value;
+				envars[keyToExp] = mappedVal;
+			}
 		}
 		exp.children.pop_front();
 	}
@@ -892,51 +931,95 @@ void beginExp(Expression& exp, map<string,Expression>& envars)
 void ifExp(Expression& exp, map<string,Expression>& envars)
 {
 	//temporary version that kinda works but technically evaluates everything
-	if (exp.children.size() != 3 || exp.children.front().atom.type != BoolType)
+	if (exp.children.size() != 3 || exp.children.back().atom.type != BoolType)
 	{
 		throw InterpreterSemanticError("Error: issue in evaluation");
 	}
-	if (exp.children.front().atom.bool_value)
+	if (exp.children.back().atom.bool_value)
 	{
-		exp.children.pop_front();
-		if (exp.children.front().atom.type == BoolType)
+		exp.children.pop_back();
+		exp.children.pop_back();
+		if (exp.children.back().atom.type == BoolType)
 		{
 			exp.atom.type = BoolType;
-			exp.atom.bool_value = exp.children.front().atom.bool_value;
+			exp.atom.bool_value = exp.children.back().atom.bool_value;
 		}
-		else if (exp.children.front().atom.type == DoubleType)
+		else if (exp.children.back().atom.type == DoubleType)
 		{
 			exp.atom.type = DoubleType;
-			exp.atom.double_value = exp.children.front().atom.double_value;
+			exp.atom.double_value = exp.children.back().atom.double_value;
 		}
 		else
 		{
-			exp.atom.type = StringType;
-			exp.atom.string_value = exp.children.front().atom.string_value;
+			
+			if (envars.count(exp.children.back().atom.string_value) > 0)
+			{
+				if (envars[exp.children.back().atom.string_value].atom.type == BoolType)//line that changes
+				{
+					exp.atom.type = BoolType;
+					exp.atom.bool_value = envars[exp.children.back().atom.string_value].atom.bool_value;//line that changes
+				}
+				else if (envars[exp.children.back().atom.string_value].atom.type == DoubleType)
+				{
+					exp.atom.type = DoubleType;
+					exp.atom.double_value = envars[exp.children.back().atom.string_value].atom.double_value;
+				}
+				else
+				{
+					exp.atom.type = StringType;
+					exp.atom.string_value = envars[exp.children.back().atom.string_value].atom.string_value;
+				}
+			}
+			else
+			{
+				exp.atom.type = StringType;
+				exp.atom.string_value = exp.children.back().atom.string_value;
+			}
 		}
-		exp.children.pop_front();
-		exp.children.pop_front();
+		exp.children.pop_back();
 	}
 	else
 	{
-		exp.children.pop_front();
-		exp.children.pop_front();
-		if (exp.children.front().atom.type == BoolType)
+		exp.children.pop_back();
+		if (exp.children.back().atom.type == BoolType)
 		{
 			exp.atom.type = BoolType;
-			exp.atom.bool_value = exp.children.front().atom.bool_value;
+			exp.atom.bool_value = exp.children.back().atom.bool_value;
 		}
-		else if (exp.children.front().atom.type == DoubleType)
+		else if (exp.children.back().atom.type == DoubleType)
 		{
 			exp.atom.type = DoubleType;
-			exp.atom.double_value = exp.children.front().atom.double_value;
+			exp.atom.double_value = exp.children.back().atom.double_value;
 		}
 		else
 		{
-			exp.atom.type = StringType;
-			exp.atom.string_value = exp.children.front().atom.string_value;
+			
+			if (envars.count(exp.children.back().atom.string_value) > 0)
+			{
+				if (envars[exp.children.back().atom.string_value].atom.type == BoolType)//line that changes
+				{
+					exp.atom.type = BoolType;
+					exp.atom.bool_value = envars[exp.children.back().atom.string_value].atom.bool_value;//line that changes
+				}
+				else if (envars[exp.children.back().atom.string_value].atom.type == DoubleType)
+				{
+					exp.atom.type = DoubleType;
+					exp.atom.double_value = envars[exp.children.back().atom.string_value].atom.double_value;
+				}
+				else
+				{
+					exp.atom.type = StringType;
+					exp.atom.string_value = envars[exp.children.back().atom.string_value].atom.string_value;
+				}
+			}
+			else
+			{
+				exp.atom.type = StringType;
+				exp.atom.string_value = exp.children.back().atom.string_value;
+			}
 		}
-		exp.children.pop_front();
+		exp.children.pop_back();
+		exp.children.pop_back();
 	}
 }
 

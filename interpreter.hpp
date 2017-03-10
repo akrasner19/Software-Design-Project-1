@@ -37,8 +37,12 @@ public:
 
 	void dump();
 
+	void reset();
+
 private:
 	Expression ASTHead;
+
+	map<string,Expression> envariables;
 };
 
 bool isNumber(const string& s);
@@ -46,5 +50,7 @@ bool isNumber(const string& s);
 AtomType whatType(string token);
 
 void rtp(Expression& exp);
+
+void soleSurvivor(Expression& exp);
 
 #endif

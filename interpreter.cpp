@@ -10,6 +10,9 @@ using std::cout;
 Interpreter::Interpreter()
 {
 	ASTHead.atom.type = NoneType;
+	double dVal = atan2(0, -1);
+	Expression piVal(dVal);
+	envariables["pi"] = piVal;
 }
 
 bool isNumber(const string& s)
@@ -48,11 +51,7 @@ Expression Interpreter::eval()
 {
 	map<string,fcp> functions;
 	fillMap(functions);
-	map<string,Expression> envars;
-	double dVal = atan2(0, -1);
-	Expression piVal(dVal);
-	envars["pi"] = piVal;
-	return evalRecursive(ASTHead, envars, functions);
+	return evalRecursive(ASTHead, envariables, functions);
 }
 
 Expression Interpreter::evalRecursive(Expression& head, map<string,Expression>& envars, map<string,fcp>& funcMap)
@@ -245,6 +244,27 @@ void rtp(Expression& exp)
 			rtp(*it); //fix this and get this printing
 		}
 		cout << "\n" << endl;
+	}
+}
+
+void Interpreter::reset()
+{
+	ASTHead.atom.type = NoneType;
+	soleSurvivor(ASTHead);
+}
+
+void soleSurvivor(Expression& exp)
+{
+	if (!exp.children.empty())
+	{
+		for (list<Expression>::iterator it = exp.children.begin(); it != exp.children.end(); ++it)
+		{
+			soleSurvivor(*it);
+		}
+		while (!exp.children.empty())
+		{
+			exp.children.pop_front();
+		}
 	}
 }
 // Expression getHead(){

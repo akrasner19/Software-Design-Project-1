@@ -122,17 +122,14 @@ int main(int argc, char*argv[])
 		}
 		else
 		{
-			//nothing yet
-			
 			string str;
 			cout << endl << "vtscript> ";
+			Interpreter interpreter;
 			while (getline(cin,str))
 			{
 				std::istringstream iss(str);
 				try
 				{
-					Interpreter interpreter;
-
 					if (!interpreter.parse(iss))
 					{
 						throw InterpreterSemanticError("Error: parsing issue");
@@ -164,6 +161,7 @@ int main(int argc, char*argv[])
 				{
 					cerr << error.what() << endl;
 				}
+				interpreter.reset();
 				cout << endl << "vtscript> ";
 			}
 			//Interpreter interpreter;
