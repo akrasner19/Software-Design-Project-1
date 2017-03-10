@@ -61,11 +61,13 @@ int main(int argc, char*argv[])
 				catch (InterpreterSemanticError& error)
 				{
 					cerr << error.what() << endl;
+					return EXIT_FAILURE;
 				}
 			}
 			else
 			{
-				cerr << "Tag not recognized" << endl;
+				cerr << "Error: Tag not recognized" << endl;
+				return EXIT_FAILURE;
 			}
 		}
 		else if (argc == 2)
@@ -108,28 +110,71 @@ int main(int argc, char*argv[])
 				catch (InterpreterSemanticError& error)
 				{
 					cerr << error.what() << endl;
+					return EXIT_FAILURE;
 				}
 				
 			}
 			else
 			{
-				cerr << "File could not be opened" << endl;
+				cerr << "Error: File could not be opened" << endl;
+				return EXIT_FAILURE;
 			}
 		}
 		else
 		{
 			//nothing yet
+			
 			string str;
-			getline(cin,str);
-			std::istringstream iss(str);
-			Interpreter interpreter;
-			interpreter.parse(iss);
-			interpreter.dump();
+			cout << endl << "vtscript> ";
+			while (getline(cin,str))
+			{
+				std::istringstream iss(str);
+				try
+				{
+					Interpreter interpreter;
+
+					if (!interpreter.parse(iss))
+					{
+						throw InterpreterSemanticError("Error: parsing issue");
+					}
+					Expression exp;
+					interpreter.eval();
+					interpreter.dupExpVals(exp);
+					if (exp.atom.type == DoubleType)
+					{
+						cout << "(" << exp.atom.double_value << ")" << endl;
+					}
+					else if (exp.atom.type == BoolType)
+					{
+						if (exp.atom.bool_value)
+						{
+							cout << "(True)" << endl;
+						}
+						else
+						{
+							cout << "(False)" << endl;
+						}
+					}
+					else
+					{
+						cout << "(" << exp.atom.string_value << ")" << endl;
+					}
+				}
+				catch (InterpreterSemanticError& error)
+				{
+					cerr << error.what() << endl;
+				}
+				cout << endl << "vtscript> ";
+			}
+			//Interpreter interpreter;
+			//interpreter.parse(iss);
+			//interpreter.dump();
 		}
 	}
 	else
 	{
-		cerr << "Incorrect number of arguments" << endl;
+		cerr << "Error: Incorrect number of arguments" << endl;
+		return EXIT_FAILURE;
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }

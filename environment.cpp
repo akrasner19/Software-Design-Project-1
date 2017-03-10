@@ -11,16 +11,36 @@ void addExp(Expression& exp, map<string,Expression>& envars)
 		double sum = 0;
 		while (!exp.children.empty())
 		{
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type != DoubleType)//line that changes
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-				exp.children.pop_front();
-			}
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+						{
+							sum = sum + envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}//end of check
 			else
 			{
 				sum = sum + exp.children.front().atom.double_value;
-				exp.children.pop_front();
 			}
+			exp.children.pop_front();
 		}
 		exp.atom.type = DoubleType;
 		exp.atom.double_value = sum;
@@ -38,10 +58,31 @@ void subExp(Expression& exp, map<string,Expression>& envars)
 		double diff = 0;
 		if (exp.children.size() == 1)
 		{
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type != DoubleType)//line that changes
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-			}
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+						{
+							diff = -envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}//end of check
 			else
 			{
 				diff = -exp.children.front().atom.double_value;
@@ -49,24 +90,66 @@ void subExp(Expression& exp, map<string,Expression>& envars)
 		}
 		else
 		{
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type != DoubleType)//line that changes
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-			}
-			else
-			{
-				diff = exp.children.front().atom.double_value;
-				exp.children.pop_front();
-				if (exp.children.front().atom.type != DoubleType)
+				if (exp.children.front().atom.type == StringType)
 				{
-					throw InterpreterSemanticError("Error: issue in evaluation");
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+						{
+							diff = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
 				}
 				else
 				{
-					diff = diff - exp.children.front().atom.double_value;
-					exp.children.pop_front();
+					throw InterpreterSemanticError("Error: issue in evaluation");
 				}
+			}//end of check
+			else
+			{
+				diff = exp.children.front().atom.double_value;
 			}
+			exp.children.pop_front();
+			if (exp.children.front().atom.type != DoubleType)//line that changes
+			{
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+						{
+							diff = diff - envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}//end of check
+			else
+			{
+				diff = diff - exp.children.front().atom.double_value;
+			}
+			exp.children.pop_front();
 		}
 		exp.atom.type = DoubleType;
 		exp.atom.double_value = diff;
@@ -82,28 +165,68 @@ void multExp(Expression& exp, map<string,Expression>& envars)
 	else
 	{
 		double prod = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-			exp.children.pop_front();
-		}
-		else
-		{
-			prod = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-		}
-		while (!exp.children.empty())
-		{
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-				exp.children.pop_front();
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						prod = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				prod = prod * exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			prod = exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
+		while (!exp.children.empty())
+		{
+			if (exp.children.front().atom.type != DoubleType)//line that changes
+			{
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+						{
+							prod = prod * envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}//end of check
+			else
+			{
+				prod = prod * exp.children.front().atom.double_value;
+			}
+			exp.children.pop_front();
 		}
 		exp.atom.type = DoubleType;
 		exp.atom.double_value = prod;
@@ -119,24 +242,66 @@ void divExp(Expression& exp, map<string,Expression>& envars)
 	else
 	{
 		double quo = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			quo = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						quo = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				quo = quo / exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			quo = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						quo = quo / envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			quo = quo / exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = DoubleType;
 		exp.atom.double_value = quo;
 	}
@@ -152,24 +317,66 @@ void eqExp(Expression& exp, map<string,Expression>& envars)
 	{
 		bool ans = true;
 		double test = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			test = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						test = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				ans = test == exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			test = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						ans = test == envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			ans = test == exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -185,24 +392,66 @@ void geqExp(Expression& exp, map<string,Expression>& envars)
 	{
 		bool ans = true;
 		double test = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			test = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						test = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				ans = test >= exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			test = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						ans = test >= envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			ans = test >= exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -218,24 +467,66 @@ void leqExp(Expression& exp, map<string,Expression>& envars)
 	{
 		bool ans = true;
 		double test = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			test = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						test = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				ans = test <= exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			test = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						ans = test <= envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			ans = test <= exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -251,24 +542,66 @@ void ltExp(Expression& exp, map<string,Expression>& envars)
 	{
 		bool ans = true;
 		double test = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			test = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						test = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				ans = test < exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			test = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						ans = test < envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			ans = test < exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -284,24 +617,66 @@ void gtExp(Expression& exp, map<string,Expression>& envars)
 	{
 		bool ans = true;
 		double test = 0;
-		if (exp.children.front().atom.type != DoubleType)
+		if (exp.children.front().atom.type != DoubleType)//line that changes
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-		}
-		else
-		{
-			test = exp.children.front().atom.double_value;
-			exp.children.pop_front();
-			if (exp.children.front().atom.type != DoubleType)
+			if (exp.children.front().atom.type == StringType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						test = envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
-				ans = test > exp.children.front().atom.double_value;
-				exp.children.pop_front();
+				throw InterpreterSemanticError("Error: issue in evaluation");
 			}
+		}//end of check
+		else
+		{
+			test = exp.children.front().atom.double_value;
 		}
+		exp.children.pop_front();
+		if (exp.children.front().atom.type != DoubleType)//line that changes
+		{
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == DoubleType)//line that changes
+					{
+						ans = test > envars[exp.children.front().atom.string_value].atom.double_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
+		}//end of check
+		else
+		{
+			ans = test > exp.children.front().atom.double_value;
+		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -320,14 +695,34 @@ void andExp(Expression& exp, map<string,Expression>& envars)
 		{
 			if (exp.children.front().atom.type != BoolType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-				exp.children.pop_front();
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == BoolType)//line that changes
+						{
+							ans = ans && envars[exp.children.front().atom.string_value].atom.bool_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
 				ans = ans && exp.children.front().atom.bool_value;
-				exp.children.pop_front();
 			}
+			exp.children.pop_front();
 		}
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
@@ -347,14 +742,34 @@ void orExp(Expression& exp, map<string,Expression>& envars)
 		{
 			if (exp.children.front().atom.type != BoolType)
 			{
-				throw InterpreterSemanticError("Error: issue in evaluation");
-				exp.children.pop_front();
+				if (exp.children.front().atom.type == StringType)
+				{
+					if (envars.count(exp.children.front().atom.string_value) > 0)
+					{
+						if (envars[exp.children.front().atom.string_value].atom.type == BoolType)//line that changes
+						{
+							ans = ans || envars[exp.children.front().atom.string_value].atom.bool_value;//line that changes
+						}
+						else
+						{
+							throw InterpreterSemanticError("Error: issue in evaluation");
+						}
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
 			}
 			else
 			{
 				ans = ans || exp.children.front().atom.bool_value;
-				exp.children.pop_front();
 			}
+			exp.children.pop_front();
 		}
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
@@ -372,14 +787,34 @@ void notExp(Expression& exp, map<string,Expression>& envars)
 		bool ans = true;
 		if (exp.children.front().atom.type != BoolType)
 		{
-			throw InterpreterSemanticError("Error: issue in evaluation");
-			exp.children.pop_front();
+			if (exp.children.front().atom.type == StringType)
+			{
+				if (envars.count(exp.children.front().atom.string_value) > 0)
+				{
+					if (envars[exp.children.front().atom.string_value].atom.type == BoolType)//line that changes
+					{
+						ans = !envars[exp.children.front().atom.string_value].atom.bool_value;//line that changes
+					}
+					else
+					{
+						throw InterpreterSemanticError("Error: issue in evaluation");
+					}
+				}
+				else
+				{
+					throw InterpreterSemanticError("Error: issue in evaluation");
+				}
+			}
+			else
+			{
+				throw InterpreterSemanticError("Error: issue in evaluation");
+			}
 		}
 		else
 		{
 			ans = !exp.children.front().atom.bool_value;
-			exp.children.pop_front();
 		}
+		exp.children.pop_front();
 		exp.atom.type = BoolType;
 		exp.atom.bool_value = ans;
 	}
@@ -432,10 +867,6 @@ void beginExp(Expression& exp, map<string,Expression>& envars)
 	{
 		throw InterpreterSemanticError("Error: issue in evaluation");
 	}
-	while (exp.children.size() > 1)
-	{
-		exp.children.pop_front();
-	}
 	if (exp.children.front().atom.type == BoolType)
 	{
 		exp.atom.type = BoolType;
@@ -452,6 +883,10 @@ void beginExp(Expression& exp, map<string,Expression>& envars)
 		exp.atom.string_value = exp.children.front().atom.string_value;
 	}
 	exp.children.pop_front();
+	while (exp.children.size() != 0)
+	{
+		exp.children.pop_front();
+	}
 }
 
 void ifExp(Expression& exp, map<string,Expression>& envars)

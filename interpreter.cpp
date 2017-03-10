@@ -63,7 +63,7 @@ Expression Interpreter::evalRecursive(Expression& head, map<string,Expression>& 
 	}
 	else
 	{
-		for (list<Expression>::iterator it = head.children.begin(); it != head.children.end(); ++it)
+		for (list<Expression>::reverse_iterator it = head.children.rbegin(); it != head.children.rend(); ++it)
 		{
 			evalRecursive(*it, envars, funcMap);
 		}
@@ -147,6 +147,10 @@ Expression Interpreter::parseHelper(list<string>& tokens, Expression& head)
 				else
 				{
 					//call the method again with the parent as the node :/
+					if (!head.prevHead)
+					{
+						throw InterpreterSemanticError("Error: issue in parsing");
+					}
 					return parseHelper(tokens, *(head.prevHead));
 				}
 			}
