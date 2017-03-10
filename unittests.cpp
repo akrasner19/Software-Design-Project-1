@@ -218,3 +218,308 @@ TEST_CASE("Tests mult function", "[environment]")
 	    }
 	}
 }
+
+TEST_CASE("Tests eq function", "[environment]")
+{
+	{
+		std::string program = "(= 4 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(= 2 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (= a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (= 4 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (= a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (= 2 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::vector<std::string> programs = {"(= 4)", 
+					       	"(begin (define a True) (= 4 a))",
+					       	"(begin (define a st) (= 4 a))",
+					   		"(begin (define a st) (= 4 b))",
+					   		"(begin (define a True) (= a 4))",
+					       	"(begin (define a st) (= a 4))",
+					   		"(begin (define a st) (= b 4))"
+					   		};
+	    for(auto s : programs)
+	    {
+	    	Interpreter interp;
+
+	    	std::istringstream iss(s);
+	      
+	    	bool ok = interp.parse(iss);
+	    	REQUIRE(ok);
+
+	    	REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+	    }
+	}
+}
+
+TEST_CASE("Tests geq function", "[environment]")
+{
+	{
+		std::string program = "(>= 4 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(>= 2 4)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (>= a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (>= 4 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (>= a 4))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (>= 2 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::vector<std::string> programs = {"(>= 4)", 
+					       	"(begin (define a True) (>= 4 a))",
+					       	"(begin (define a st) (>= 4 a))",
+					   		"(begin (define a st) (>= 4 b))",
+					   		"(begin (define a True) (>= a 4))",
+					       	"(begin (define a st) (>= a 4))",
+					   		"(begin (define a st) (>= b 4))"
+					   		};
+	    for(auto s : programs)
+	    {
+	    	Interpreter interp;
+
+	    	std::istringstream iss(s);
+	      
+	    	bool ok = interp.parse(iss);
+	    	REQUIRE(ok);
+
+	    	REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+	    }
+	}
+}
+
+TEST_CASE("Tests gt function", "[environment]")
+{
+	{
+		std::string program = "(> 4 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(> 2 4)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (> a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (> 4 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (> a 4))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (> 2 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::vector<std::string> programs = {"(> 4)", 
+					       	"(begin (define a True) (> 4 a))",
+					       	"(begin (define a st) (> 4 a))",
+					   		"(begin (define a st) (> 4 b))",
+					   		"(begin (define a True) (> a 4))",
+					       	"(begin (define a st) (> a 4))",
+					   		"(begin (define a st) (> b 4))"
+					   		};
+	    for(auto s : programs)
+	    {
+	    	Interpreter interp;
+
+	    	std::istringstream iss(s);
+	      
+	    	bool ok = interp.parse(iss);
+	    	REQUIRE(ok);
+
+	    	REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+	    }
+	}
+}
+
+TEST_CASE("Tests leq function", "[environment]")
+{
+	{
+		std::string program = "(<= 4 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(<= 2 4)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (<= a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (<= 4 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (<= a 4))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (<= 2 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::vector<std::string> programs = {"(<= 4)", 
+					       	"(begin (define a True) (<= 4 a))",
+					       	"(begin (define a st) (<= 4 a))",
+					   		"(begin (define a st) (<= 4 b))",
+					   		"(begin (define a True) (<= a 4))",
+					       	"(begin (define a st) (<= a 4))",
+					   		"(begin (define a st) (<= b 4))"
+					   		};
+	    for(auto s : programs)
+	    {
+	    	Interpreter interp;
+
+	    	std::istringstream iss(s);
+	      
+	    	bool ok = interp.parse(iss);
+	    	REQUIRE(ok);
+
+	    	REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+	    }
+	}
+}
+
+TEST_CASE("Tests lt function", "[environment]")
+{
+	{
+		std::string program = "(< 4 2)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(< 2 4)";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (< a 2))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (< 4 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(false));
+	}
+
+	{
+		std::string program = "(begin (define a 2) (< a 4))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::string program = "(begin (define a 4) (< 2 a))";
+    	Expression result = runIt(program);
+    	REQUIRE(result == Expression(true));
+	}
+
+	{
+		std::vector<std::string> programs = {"(< 4)", 
+					       	"(begin (define a True) (< 4 a))",
+					       	"(begin (define a st) (< 4 a))",
+					   		"(begin (define a st) (< 4 b))",
+					   		"(begin (define a True) (< a 4))",
+					       	"(begin (define a st) (< a 4))",
+					   		"(begin (define a st) (< b 4))"
+					   		};
+	    for(auto s : programs)
+	    {
+	    	Interpreter interp;
+
+	    	std::istringstream iss(s);
+	      
+	    	bool ok = interp.parse(iss);
+	    	REQUIRE(ok);
+
+	    	REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+	    }
+	}
+}
