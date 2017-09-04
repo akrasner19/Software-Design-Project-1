@@ -6,6 +6,20 @@ The language is written in prefix notation with parentheses surrounding executio
 
 Examples of inputs:
 
+(+ 1 2 3)
+result = 6
 
+(if (5 >= 3) (True) (False))
+result = True
+
+(begin (define answer (+ 9 11)) (answer))
+result = 20
+
+(begin (define answer 42)
+(answer))
+result = 42
+
+Commands are tokenized and parsed into an execution tree. The commands are then recursively evaluated to a final result. 
+Variables are stored in an environment map for the duration of the execution.
 
 ECE 3574 Project 1
